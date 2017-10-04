@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Heimaverkefni2</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="heimverk2.css">
+</head>
+<body>
+	<!-- Div sem heldur utan um allt -->
+	<div class="container" id="todo">
+		
+		<section class="panel">
+			<!--  -->
+  			<input type="checkbox" id="mark-all" v-bind:checked="areAllSelected" v-on:click="selectAll">
+    		<input type="text" placeholder="What do you need to do?" autofocus class="text-input" v-model="newTask" v-on:keyup.enter="addTask">
+    		<button v-on:click="clearList">Clear List</button>
+  		</section>
+
+  		<!-- Listinn sem heldur utan um todo hlutina -->
+  		<ul class="list">
+    		<li v-for="task in taskList" v-bind:class="{done: task.checked}">
+    			<input type="checkbox" class="checkbox" v-model="task.checked">
+   				<label for="checkbox"> {{ task.text }} </label>
+   				<button class="delete" v-on:click="removeTask(task)">X</button>
+    		</li>
+  		</ul>
+
+  		<!-- Sýnir hvernig allt virkar-->
+  		<pre>{{ $data }}</pre>
+	</div>
+	
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.3/vue.js"></script>
+	<script type="text/javascript">
+	//Gera Vue tilbuið
+	var todo = new Vue ({
+		//ID sem tengir Div-ið okkar
+		el: '#todo',
+		data: {
+			//Byrja að task sé ekki neitt
+			newTask: "",
+			//Búa til listann
+    		taskList: []
+		},
+		
+		computed: {
+  			areAllSelected: function() {
+  				//Tjékka ef eitthvað sé true í listanum
+    			return this.taskList.every(function(task) {
+      				return task.checked;
+    			}) && this.taskList.length > 0;
+  			},
+		},
+		
+		//Hér gerum við okkar function
+		methods: {
+			addTask: function() {
+				//Trim fjarlægir whitespace
+    			var task = this.newTask.trim();
+    			//Tjékkar ef task er ekki tómur listi
+      			if (task) {
+      				//Sendir task-ið í listann okkar
+        			this.taskList.push({
+          				text: task,
+         				 checked: false
+        				});
+        			//Setur input-ið tómt svo þý þurfir ekki að stroka út fyrra taskið
+        			this.newTask = "";
+      			}
+    		},
+
+    		removeTask: function(task) {
+    			//Fjarlægja eitt task úr listanum
+      			var index = this.taskList.indexOf(task);
+      			this.taskList.splice(index, 1);
+    		},
+
+    		clearList: function() {
+    			//Hreinsa litann, taka allt úr honum
+      			this.taskList = [];
+    		},
+
+    		selectAll: function(task) {
+    			//targetValue til að tjékka ef allt er valið eða ekki valið eða ekki
+    			var targetValue = this.areAllSelected ? false : true;
+    			//Ef ekki allt er valið þá er for loopið til að merkja allt
+    			for (var i = 0; i < this.taskList.length; i++) {
+    				this.taskList[i].checked = targetValue;
+    			}
+    		}
+ 		}
+	});
+	</script>
+
+</body>
+</html>
